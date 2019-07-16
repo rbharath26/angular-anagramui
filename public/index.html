@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>
+AngularJs $http.post() Service Method Example
+</title>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<script type="text/javascript">
+
+
+var app = angular.module('postserviceApp', []);
+
+app.config(['$httpProvider', function($httpProvider) {
+    $httpProvider.defaults.useXDomain = true;
+    delete $httpProvider.defaults.headers.common['X-Requested-With'];
+    $httpProvider.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
+}
+]);
+
+
+app.controller('postserviceCtrl', function ($scope, $http) {
+$scope.phrase = null;
+
+$scope.postdata = function (phrase) {
+if(typeof(Storage) !== "undefined") {
+    if (sessionStorage.clickcount) {
+      sessionStorage.clickcount = Number(sessionStorage.clickcount)+1;      
+          } else {
+      sessionStorage.clickcount = 1;
+    }
+    console.log(sessionStorage.anagram);
+    if (sessionStorage.phrasepast) {
+    	if(angular.equals(phrase,sessionStorage.phrasepast)){    		
+        sessionStorage.clickcount1 = Number(sessionStorage.clickcount1)+1; 
+        sessionStorage.phrasepast=phrase;
+    	} else{
+    		sessionStorage.clickcount1 = 1;
+    		 sessionStorage.phrasepast = phrase;
+    	}
+            } else {
+        sessionStorage.clickcount1 = 1;
+        sessionStorage.phrasepast = phrase;
+      }
+    
+    
+/*     if(typeof(Storage) !== "undefined") {
+        if (sessionStorage.clickcount) {
+          sessionStorage.clickcount = Number(sessionStorage.clickcount)+1;      
+              } else {
+          sessionStorage.clickcount = 1;
+        }
+        if (sessionStorage.phrasepast) {
+        	if(angular.equals(phrase,sessionStorage.phrasepast)){    		
+            sessionStorage.clickcount1 = Number(sessionStorage.clickcount1)+1; 
+            sessionStorage.phrasepast=phrase;
+        	} else{
+        		sessionStorage.clickcount1 = 1;
+        		 sessionStorage.phrasepast = phrase;
+        	}
+                } else {
+            sessionStorage.clickcount1 = 1;
+            sessionStorage.phrasepast = phrase;
+          } */
+    /* if (sessionStorage.phrasepast) {
+    	if(sessionStorage.phrasepast.equals(phrase)){
+    		sessionStorage.clickcount1 = 2;
+        sessionStorage.clickcount1 = Number(sessionStorage.clickcount1)+1; 
+    	} else{
+    		sessionStorage.clickcount1 = 1;
+    	}
+            } else {
+        sessionStorage.clickcount1 = 1;
+       // sessionStorage.phrasepast = phrase;
+      } */
+   // document.getElementById("result").innerHTML = "You have clicked the button " + sessionStorage.clickcount + " time(s) in this session.";
+  } else {
+    //document.getElementById("result").innerHTML = "Sorry, your browser does not support web storage...";
+  }	
+var Anagram = {
+phrase: phrase
+};
+//Call the services
+$http.post('http://localhost:3000/api/anagram', JSON.stringify(Anagram)).then(function (response) {
+if (response.data)
+$scope.output = response;
+$scope.phraseval = phrase;
+$scope.anagram = response.data.anagram;
+
+console.log(response);
+$scope.msg = "Post Data Submitted Successfully!";
+$scope.statusval = response.status;
+$scope.statustext = response.statusText;
+$scope.headers = response.headers();
+$scope.sessioncount = sessionStorage.clickcount;
+$scope.sessioncount1 = sessionStorage.clickcount1;
+console.log(phrase);
+console.log(response.data.anagram);
+if(phrase===(response.data.anagram)){   
+	sessionStorage.anagram = response.data.anagram;
+	console.log(phrase);
+	console.log(sessionStorage.anagram);
+} 
+
+}, function (response) {
+$scope.msg = "Service not Exists";
+$scope.statusval = response.status;
+$scope.statustext = response.statusText;
+$scope.headers = response.headers();
+
+});
+};
+});
+</script>
+</head>
+<body>
+<h2>AngularJS Http Post Method Example</h2>
+<div ng-app="postserviceApp" ng-controller="postserviceCtrl">
+<div>
+Phrase : <input ng-model="phrase"  /><br/><br/>
+
+<input type="button" value="Send" ng-click="postdata(phrase)" /> <br/><br/>
+</div>
+<p>Output Message : {{msg}}</p>
+<p>StatusCode: {{statusval}}</p>
+<p>Output: {{output}}</p>
+<p>phraseval: {{phraseval}}</p>
+<p>anagram: {{anagram}}</p>
+<p>Status: {{statustext}}</p>
+<p>Response Headers: {{headers}}</p>
+<p>Session count: {{sessioncount}}</p>
+<p>Session count: {{sessioncount1}}</p>
+</div>
+</body>
+</html>
